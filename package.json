@@ -1,0 +1,14 @@
+{
+  "name": "",
+  "description": "",
+  "version": "0.0.0",
+  "author": {
+    "name": "Raine Revere",
+    "email": "raineorshine@gmail.com",
+    "url": "https://github.com/raineorshine"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "xml2json": "^0.11.2"
+  }
+}
