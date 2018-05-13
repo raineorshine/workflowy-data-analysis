@@ -22,8 +22,13 @@ const countRec = (o, f, start=[], lvl=0) => {
   return o.outline.reduce((accum, item) => {
     // console.log(lvl, strip(item.text), item.text, countWords(strip(item.text)))
     const words = countWords(strip(item.text))
-    accum[lvl] = accum[lvl] || []
-    accum[lvl][words] = (accum[lvl][words] || 0) + 1
+
+    // option to only record if a leaf/non-leaf/other node
+    // if (Array.isArray(item.outline)) {
+      accum[lvl] = accum[lvl] || []
+      accum[lvl][words] = (accum[lvl][words] || 0) + 1
+    // }
+
     return Array.isArray(item.outline)
       ? countRec(item, f, accum, lvl + 1)
       : accum
@@ -50,6 +55,6 @@ const csv = wordCounts.map((words, i) => {
   return `${i},${words}`
 }).join('\n')
 
-const header = 'words,' + [...Array(maxCount + 1).keys()]
+const header = ',' + [...Array(maxCount + 1).keys()]
 
 console.log(header + '\n' + csv)
