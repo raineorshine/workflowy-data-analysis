@@ -1,0 +1,3 @@
+35334 nodes
+8125 non-leaf
+27309 leaf
