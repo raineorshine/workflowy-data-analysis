@@ -17,14 +17,17 @@ const countWords = s => s
   .replace(/[ ]{2,}/gi, ' ') // 2 or more spaces to 1
   .split(' ').length
 
-const reduceObject = (o, f, lvl=0) => {
+const countRec = (o, f, start=[], lvl=0) => {
+  // console.log('counting lvl', lvl)
   return o.outline.reduce((accum, item) => {
-    // console.log(lvl, strip(item.text), countWords(strip(item.text)))
+    // console.log(lvl, strip(item.text), item.text, countWords(strip(item.text)))
     const words = countWords(strip(item.text))
     accum[lvl] = accum[lvl] || []
     accum[lvl][words] = (accum[lvl][words] || 0) + 1
-    return accum
-  }, [])
+    return Array.isArray(item.outline)
+      ? countRec(item, f, accum, lvl + 1)
+      : accum
+  }, start)
 }
 
 /*
@@ -38,7 +41,15 @@ words, instances at lvl1, lvl2, lvl3, ...
 */
 
 // array words of array of instances
-// const wordCounts = [...Array(20).keys()]
-const wordCounts = reduceObject(obj.opml.body)
+const wordCounts = countRec(obj.opml.body)
+// console.log(wordCounts)
 
-console.log(wordCounts)
+let maxCount = 0
+const csv = wordCounts.map((words, i) => {
+  maxCount = Math.max(maxCount, words.length)
+  return `${i},${words}`
+}).join('\n')
+
+const header = 'words,' + [...Array(maxCount + 1).keys()]
+
+console.log(header + '\n' + csv)
