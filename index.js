@@ -2,25 +2,27 @@ const fs = require('fs')
 const xml2json = require('xml2json')
 
 const data = fs.readFileSync('./data.opml', 'utf-8')
-const obj = xml2json.toJson(data, {
-  object: true
-})
+const obj = xml2json.toJson(data, { object: true })
 
 // console.log(obj.opml.body)
 
-const countWords = s => {
-  return (s
-    .replace(/\n/g,' ') // newlines to space
-    .replace(/(^\s*)|(\s*$)/gi,'') // remove spaces from start + end
-    .replace(/[ ]{2,}/gi,' ') // 2 or more spaces to 1
-    .split(' ').length
-  )
-}
+const strip = s => s
+  .replace(/<\/?[a-z]+>/gi, ' ') // tags
+  .replace(/&[a-z]+;/gi, ' ') // entity codes
+  .replace(/[^\s\w'&;]/gi, ' ') // emoji and punctuation
 
-const reduceObject = (o, f, depth=0) => {
+const countWords = s => s
+  .replace(/\n/g, ' ') // newlines to space
+  .replace(/(^\s*)|(\s*$)/gi, '') // remove spaces from start + end
+  .replace(/[ ]{2,}/gi, ' ') // 2 or more spaces to 1
+  .split(' ').length
+
+const reduceObject = (o, f, lvl=0) => {
   return o.outline.reduce((accum, item) => {
-    console.log(depth, item.text, countWords(item.text))
-    accum[0] = item.text
+    // console.log(lvl, strip(item.text), countWords(strip(item.text)))
+    const words = countWords(strip(item.text))
+    accum[lvl] = accum[lvl] || []
+    accum[lvl][words] = (accum[lvl][words] || 0) + 1
     return accum
   }, [])
 }
